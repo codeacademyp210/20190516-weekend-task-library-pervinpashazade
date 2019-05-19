@@ -40,13 +40,13 @@ namespace LibraryProject
 
         private void BtnSaveAuthorsForm_Click(object sender, EventArgs e)
         {
-            if (btnDeleteAuthorsForm.Enabled=false)
+            if (btnDeleteAuthorsForm.Enabled==false)
             {
-                if (!UpdateAuthors())
-                {
-                    MessageBox.Show("Author was not updated", "ERROR");
-                    return;
-                }
+                //if (!UpdateAuthors())
+                //{
+                //    MessageBox.Show("Author was not updated", "ERROR");
+                //    return;
+                //}
 
                 GenerateAuthorsForm();
                 MessageBox.Show("New author was successfully updated");
@@ -63,7 +63,6 @@ namespace LibraryProject
                 MessageBox.Show("New author was successfully created");
             }
             ResetAuthorsForm();
-            ResetAuthorsForm();
         }
 
         private bool UpdateAuthors()
@@ -74,8 +73,8 @@ namespace LibraryProject
 
                 Autor newAutor = db.Autors.Where(aut => aut.ID == authorFounded.ID).FirstOrDefault();
 
-                newAutor.Name = txtBoxNameAuthor.Text;
-                newAutor.Surname = txtBoxSurnameAuthor.Text;
+                authorFounded.Name = txtBoxNameAuthor.Text;
+                authorFounded.Surname = txtBoxSurnameAuthor.Text;
 
 
                 affectRows = db.SaveChanges();
@@ -145,7 +144,37 @@ namespace LibraryProject
 
         private void BtnDeleteAuthorsForm_Click(object sender, EventArgs e)
         {
+            var message = MessageBox.Show("Are you sure delete " + authorFounded.Name + " " + authorFounded.Surname +
+                "  from Database?", "Delete Author", MessageBoxButtons.OKCancel);
 
+            if (DialogResult.OK != message)
+            {
+                return;
+            }
+
+            if (!DeleteAuthor())
+            {
+                MessageBox.Show("Author was not deleted!", "Error");
+                return;
+            }
+            
+                MessageBox.Show("Author was successfully deleted");
+            
+        }
+
+
+        private bool DeleteAuthor()
+        {
+            int affectRows = 0;
+
+            using (LibraryDBEntities db = new LibraryDBEntities())
+            {
+                Autor author = db.Autors.Where(s => s.ID == authorFounded.ID).First();
+                db.Autors.Remove(author);
+                affectRows = db.SaveChanges();
+            }
+
+            return false;
         }
     }
 }
